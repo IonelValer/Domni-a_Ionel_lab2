@@ -61,8 +61,7 @@ namespace Domnița_Ionel_lab2.Controllers
                     books = books.OrderBy(b => b.Title);
                     break;
             }
-            int pageSize = 2;
-            return View(await PaginatedList<Book>.CreateAsync(books.AsNoTracking(), pageNumber ?? 1, pageSize));
+            return View(await books.AsNoTracking().ToListAsync());
         }
 
         // GET: Books/Details/5
