@@ -28,11 +28,9 @@ namespace Domnița_Ionel_lab2.Controllers
         string searchString,
         int? pageNumber)
         {
-
             ViewData["CurrentSort"] = sortOrder;
             ViewData["TitleSortParm"] = String.IsNullOrEmpty(sortOrder) ? "title_desc" : "";
             ViewData["PriceSortParm"] = sortOrder == "Price" ? "price_desc" : "Price";
-          
             if (searchString != null)
             {
                 pageNumber = 1;
@@ -41,7 +39,6 @@ namespace Domnița_Ionel_lab2.Controllers
             {
                 searchString = currentFilter;
             }
-
             ViewData["CurrentFilter"] = searchString;
             var books = from b in _context.Books
                         select b;
@@ -65,8 +62,7 @@ namespace Domnița_Ionel_lab2.Controllers
                     break;
             }
             int pageSize = 2;
-            return View(await PaginatedList<Book>.CreateAsync(books.AsNoTracking(), pageNumber ??
-           1, pageSize));
+            return View(await PaginatedList<Book>.CreateAsync(books.AsNoTracking(), pageNumber ?? 1, pageSize));
         }
 
         // GET: Books/Details/5
@@ -102,7 +98,7 @@ namespace Domnița_Ionel_lab2.Controllers
         // more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Create([Bind("ID,Title,Author,Price")] Book book)
+        public async Task<IActionResult> Create([Bind("Title,Author,Price")] Book book)
         {
             try
             {
@@ -114,9 +110,10 @@ namespace Domnița_Ionel_lab2.Controllers
                     return RedirectToAction(nameof(Index));
                 }
             }
-            catch (DbUpdateException/*ex*/)
+            catch (DbUpdateException /* ex*/)
             {
-                ModelState.AddModelError("", "Unable to save changes." + "Try again, and if the problem persist");
+                ModelState.AddModelError("", "Unable to save changes. " +
+                "Try again, and if the problem persists ");
             }
             return View(book);
         }
@@ -147,46 +144,37 @@ namespace Domnița_Ionel_lab2.Controllers
             }
             return View(studentToUpdate);
         }
-     
 
-                // POST: Books/Edit/5
-                // To protect from overposting attacks, enable the specific properties you want to bind to, for 
-                // more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
-                [HttpPost]
+
+        // POST: Books/Edit/5
+        // To protect from overposting attacks, enable the specific properties you want to bind to, for 
+        // more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
+        [HttpPost, ActionName("Edit")]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Edit(int id, [Bind("ID,Title,Author,Price")] Book book)
+        public async Task<IActionResult> EditPost(int? id)
         {
-            if (id != book.ID)
+            if (id == null)
             {
                 return NotFound();
             }
-
-            if (ModelState.IsValid)
+            var studentToUpdate = await _context.Books.FirstOrDefaultAsync(s => s.ID == id);
+            if (await TryUpdateModelAsync<Book>(
+            studentToUpdate,
+            "",
+            s => s.Author, s => s.Title, s => s.Price))
             {
                 try
                 {
-                    _context.Update(book);
                     await _context.SaveChangesAsync();
+                    return RedirectToAction(nameof(Index));
                 }
-                catch (DbUpdateConcurrencyException)
+                catch (DbUpdateException /* ex */)
                 {
-                    if (!BookExists(book.ID))
-                    {
-                        return NotFound();
-                    }
-                    else
-                    {
-                        throw;
-                    }
+                    ModelState.AddModelError("", "Unable to save changes. " +
+                    "Try again, and if the problem persists");
                 }
-                return RedirectToAction(nameof(Index));
             }
-            return View(book);
-        }
-
-        private bool BookExists(int iD)
-        {
-            throw new NotImplementedException();
+            return View(studentToUpdate);
         }
 
         // GET: Books/Delete/5
@@ -207,7 +195,7 @@ namespace Domnița_Ionel_lab2.Controllers
             if (saveChangesError.GetValueOrDefault())
             {
                 ViewData["ErrorMessage"] =
-                    "Delete failed.Try again";
+                "Delete failed. Try again";
             }
             return View(book);
         }
@@ -229,7 +217,7 @@ namespace Domnița_Ionel_lab2.Controllers
                 await _context.SaveChangesAsync();
                 return RedirectToAction(nameof(Index));
             }
-            catch (DbUpdateException/*ex*/)
+            catch (DbUpdateException /* ex */)
             {
                 return RedirectToAction(nameof(Delete), new { id = id, saveChangesError = true });
             }
