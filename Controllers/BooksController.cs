@@ -7,6 +7,8 @@ using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
 using Domnița_Ionel_lab2.Data;
 using Domnița_Ionel_lab2.Models;
+using System.Runtime.InteropServices.WindowsRuntime;
+using Nume_Pren_Lab2;
 
 namespace Domnița_Ionel_lab2.Controllers
 {
@@ -20,9 +22,51 @@ namespace Domnița_Ionel_lab2.Controllers
         }
 
         // GET: Books
-        public async Task<IActionResult> Index()
+        public async Task<IActionResult> Index(
+        string sortOrder,
+        string currentFilter,
+        string searchString,
+        int? pageNumber)
         {
-            return View(await _context.Books.ToListAsync());
+
+            ViewData["CurrentSort"] = sortOrder;
+            ViewData["TitleSortParm"] = String.IsNullOrEmpty(sortOrder) ? "title_desc" : "";
+            ViewData["PriceSortParm"] = sortOrder == "Price" ? "price_desc" : "Price";
+          
+            if (searchString != null)
+            {
+                pageNumber = 1;
+            }
+            else
+            {
+                searchString = currentFilter;
+            }
+
+            ViewData["CurrentFilter"] = searchString;
+            var books = from b in _context.Books
+                        select b;
+            if (!String.IsNullOrEmpty(searchString))
+            {
+                books = books.Where(s => s.Title.Contains(searchString));
+            }
+            switch (sortOrder)
+            {
+                case "title_desc":
+                    books = books.OrderByDescending(b => b.Title);
+                    break;
+                case "Price":
+                    books = books.OrderBy(b => b.Price);
+                    break;
+                case "price_desc":
+                    books = books.OrderByDescending(b => b.Price);
+                    break;
+                default:
+                    books = books.OrderBy(b => b.Title);
+                    break;
+            }
+            int pageSize = 2;
+            return View(await PaginatedList<Book>.CreateAsync(books.AsNoTracking(), pageNumber ??
+           1, pageSize));
         }
 
         // GET: Books/Details/5
@@ -34,7 +78,11 @@ namespace Domnița_Ionel_lab2.Controllers
             }
 
             var book = await _context.Books
-                .FirstOrDefaultAsync(m => m.ID == id);
+            .Include(s => s.Orders)
+            .ThenInclude(e => e.Customer)
+            .AsNoTracking()
+            .FirstOrDefaultAsync(m => m.ID == id);
+
             if (book == null)
             {
                 return NotFound();
@@ -56,11 +104,19 @@ namespace Domnița_Ionel_lab2.Controllers
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Create([Bind("ID,Title,Author,Price")] Book book)
         {
-            if (ModelState.IsValid)
+            try
             {
-                _context.Add(book);
-                await _context.SaveChangesAsync();
-                return RedirectToAction(nameof(Index));
+
+                if (ModelState.IsValid)
+                {
+                    _context.Add(book);
+                    await _context.SaveChangesAsync();
+                    return RedirectToAction(nameof(Index));
+                }
+            }
+            catch (DbUpdateException/*ex*/)
+            {
+                ModelState.AddModelError("", "Unable to save changes." + "Try again, and if the problem persist");
             }
             return View(book);
         }
@@ -72,19 +128,31 @@ namespace Domnița_Ionel_lab2.Controllers
             {
                 return NotFound();
             }
-
-            var book = await _context.Books.FindAsync(id);
-            if (book == null)
+            var studentToUpdate = await _context.Books.FirstOrDefaultAsync(s => s.ID == id);
+            if (await TryUpdateModelAsync<Book>(
+            studentToUpdate,
+            "",
+            s => s.Author, s => s.Title, s => s.Price))
             {
-                return NotFound();
+                try
+                {
+                    await _context.SaveChangesAsync();
+                    return RedirectToAction(nameof(Index));
+                }
+                catch (DbUpdateException /* ex */)
+                {
+                    ModelState.AddModelError("", "Unable to save changes. " +
+                    "Try again, and if the problem persists");
+                }
             }
-            return View(book);
+            return View(studentToUpdate);
         }
+     
 
-        // POST: Books/Edit/5
-        // To protect from overposting attacks, enable the specific properties you want to bind to, for 
-        // more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
-        [HttpPost]
+                // POST: Books/Edit/5
+                // To protect from overposting attacks, enable the specific properties you want to bind to, for 
+                // more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
+                [HttpPost]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Edit(int id, [Bind("ID,Title,Author,Price")] Book book)
         {
@@ -116,8 +184,13 @@ namespace Domnița_Ionel_lab2.Controllers
             return View(book);
         }
 
+        private bool BookExists(int iD)
+        {
+            throw new NotImplementedException();
+        }
+
         // GET: Books/Delete/5
-        public async Task<IActionResult> Delete(int? id)
+        public async Task<IActionResult> Delete(int? id, bool? saveChangesError = false)
         {
             if (id == null)
             {
@@ -125,12 +198,17 @@ namespace Domnița_Ionel_lab2.Controllers
             }
 
             var book = await _context.Books
+                .AsNoTracking()
                 .FirstOrDefaultAsync(m => m.ID == id);
             if (book == null)
             {
                 return NotFound();
             }
-
+            if (saveChangesError.GetValueOrDefault())
+            {
+                ViewData["ErrorMessage"] =
+                    "Delete failed.Try again";
+            }
             return View(book);
         }
 
@@ -140,14 +218,22 @@ namespace Domnița_Ionel_lab2.Controllers
         public async Task<IActionResult> DeleteConfirmed(int id)
         {
             var book = await _context.Books.FindAsync(id);
-            _context.Books.Remove(book);
-            await _context.SaveChangesAsync();
-            return RedirectToAction(nameof(Index));
+            if (book == null)
+            {
+                return RedirectToAction(nameof(Index));
+            }
+            try
+            {
+
+                _context.Books.Remove(book);
+                await _context.SaveChangesAsync();
+                return RedirectToAction(nameof(Index));
+            }
+            catch (DbUpdateException/*ex*/)
+            {
+                return RedirectToAction(nameof(Delete), new { id = id, saveChangesError = true });
+            }
         }
 
-        private bool BookExists(int id)
-        {
-            return _context.Books.Any(e => e.ID == id);
-        }
-    }
-}
+        private bool BookExists1(int id) => _context.Books.Any(e => e.ID == id);
+    } }
