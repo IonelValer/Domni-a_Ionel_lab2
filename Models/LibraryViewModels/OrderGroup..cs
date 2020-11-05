@@ -1,12 +1,7 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
 using System.ComponentModel.DataAnnotations;
-
 namespace Domnița_Ionel_lab2.Models.LibraryViewModels
 {
-
     public class OrderGroup
     {
         [DataType(DataType.Date)]
@@ -14,4 +9,3 @@ namespace Domnița_Ionel_lab2.Models.LibraryViewModels
         public int BookCount { get; set; }
     }
 }
-

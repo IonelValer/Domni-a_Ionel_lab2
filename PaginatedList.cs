@@ -2,9 +2,10 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
-using Domnița_Ionel_lab2.Views.Books;
 using Microsoft.EntityFrameworkCore;
-namespace Domnița_Ionel_lab2
+namespace Domnița_Ionel_lab2.Views.Books
+
+
 {
     public class PaginatedList<T> : List<T>
     {

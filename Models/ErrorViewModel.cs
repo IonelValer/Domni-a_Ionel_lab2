@@ -1,5 +1,3 @@
-using System;
-
 namespace Domnița_Ionel_lab2.Models
 {
     public class ErrorViewModel

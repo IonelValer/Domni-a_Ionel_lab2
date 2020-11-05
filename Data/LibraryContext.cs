@@ -1,10 +1,7 @@
 ﻿using Domnița_Ionel_lab2.Models;
-using Domnița_Ionel_lab2.Views.Books;
 using Microsoft.EntityFrameworkCore;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
+using static Domnita_Ionel_Valer_Lab2.Models.Book;
+using Book = Domnița_Ionel_lab2.Models.Book;
 
 namespace Domnița_Ionel_lab2.Data
 {

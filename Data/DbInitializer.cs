@@ -99,4 +99,5 @@ PublisherID = publishers.Single(i => i.PublisherName == "Paralela 45").ID
             }
             context.SaveChanges();
         }
-    } }
+    }
+}

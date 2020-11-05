@@ -1,9 +1,5 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
+﻿using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
-using Domnița_Ionel_lab2.Views.Books;
 
 namespace Domnița_Ionel_lab2.Models
 {
