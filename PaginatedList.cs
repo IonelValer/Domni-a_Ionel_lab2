@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using LibraryModel.Models;
 using Microsoft.EntityFrameworkCore;
 namespace Domnița_Ionel_lab2.Views.Books
 

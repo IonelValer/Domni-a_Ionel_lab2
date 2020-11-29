@@ -1,6 +1,7 @@
 ﻿using System;
 
-namespace Domnița_Ionel_lab2.Models
+
+namespace LibraryModel.Models
 {
     public class Order
     {

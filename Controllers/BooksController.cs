@@ -5,7 +5,7 @@ using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using Domnița_Ionel_lab2.Data;
-
+using LibraryModel.Models;
 
 namespace Domnița_Ionel_lab2.Controllers
 {
@@ -94,7 +94,7 @@ namespace Domnița_Ionel_lab2.Controllers
         // more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Create([Bind("Title,Author,Price")] Domnita_Ionel_Valer_Lab2.Models.Book book)
+        public async Task<IActionResult> Create([Bind("Title,Author,Price")] Domnița_Ionel_lab2.Data.Models book)
         {
             try
             {
@@ -154,7 +154,7 @@ namespace Domnița_Ionel_lab2.Controllers
                 return NotFound();
             }
             var studentToUpdate = await _context.Books.FirstOrDefaultAsync(s => s.ID == id);
-            if (await TryUpdateModelAsync<Domnita_Ionel_Valer_Lab2.Models.Book>(
+            if (await TryUpdateModelAsync<Domnița_Ionel_lab2.Models>(
             studentToUpdate,
             "",
             s => s.Author, s => s.Title, s => s.Price))

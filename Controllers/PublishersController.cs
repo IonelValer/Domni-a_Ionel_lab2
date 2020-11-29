@@ -7,6 +7,8 @@ using Microsoft.EntityFrameworkCore;
 using Domnița_Ionel_lab2.Data;
 using Domnița_Ionel_lab2.Models;
 using Domnița_Ionel_lab2.Models.LibraryViewModels;
+using LibraryModel.Models;
+using static LibraryModel.Models.Book;
 
 namespace Domnița_Ionel_lab2.Controllers
 {

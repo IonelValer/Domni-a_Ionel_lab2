@@ -1,5 +1,6 @@
 ﻿using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
+using static LibraryModel.Models.Book;
 
 namespace Domnița_Ionel_lab2.Models
 {

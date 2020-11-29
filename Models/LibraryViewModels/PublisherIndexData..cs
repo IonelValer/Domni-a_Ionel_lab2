@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using LibraryModel.Models;
+using System.Collections.Generic;
 
 namespace Domnița_Ionel_lab2.Models.LibraryViewModels
 {

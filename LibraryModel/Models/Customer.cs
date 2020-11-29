@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations.Schema;
 
-namespace Domnița_Ionel_lab2.Models
+namespace LibraryModel.Models
 {
     public class Customer
     {

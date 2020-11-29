@@ -1,9 +1,9 @@
 ﻿using Domnița_Ionel_lab2.Models;
 using Microsoft.EntityFrameworkCore;
-using static Domnita_Ionel_Valer_Lab2.Models.Book;
-using Book = Domnița_Ionel_lab2.Models.Book;
+using static LibraryModel.Models.Book;
 
-namespace Domnița_Ionel_lab2.Data
+
+namespace LibraryModel.Models
 {
     public class LibraryContext : DbContext
     {
